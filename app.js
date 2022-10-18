@@ -18,7 +18,9 @@ app.use(bodyParser.json());
 const port = process.env.PORT || 8000;
 // we are telling out app which port to run on and if deployed to heroku run on "process.env.PORT"
 
-app.get("/", (req, res) => res.send("Hel World"));
+app.get("/", (req, res) => {
+    res.send("Hel World")
+})
 app.use("/api/users", users);
 app.use("/api/tweets", tweets);
 
