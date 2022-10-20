@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../../models/User');
+const passport = require('passport');
 const jwt = require('jsonwebtoken');
 // this allows users to sign in and access protected routes.
 const keys = require('../../config/keys');
 // router.get("/test", (req, res) => res.json({ msg: "This is the users route" }));
 
+// SIGN UP ROUTE
 router.post('/register', (req, res) => {
     // Check to make sure nobody has already registered with a duplicate email
     User.findOne({ email: req.body.email })
@@ -44,6 +46,8 @@ router.post('/register', (req, res) => {
         })
 })
 
+
+// LOGIN ROUTE
 router.post('/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -58,7 +62,7 @@ router.post('/login', (req, res) => {
                 .then(isMatch => {
                     if (isMatch) {
                         const payload = { id: user.id, handle: user.handle };
-                        jwt.sign(payload, keys.secretOrKey, {expiresIn: 3600}, (err, token) => {
+                         jwt.sign(payload, keys.secretOrKey, {expiresIn: 3600}, (err, token) => {
                             res.json({
                                 success: true,
                                 token: "Bearer " + token
@@ -71,6 +75,12 @@ router.post('/login', (req, res) => {
                     }
                 })
         })
+})
+
+// PRIVATE AUTH ROUTH
+router.get('/current', passport.authenticate('jwt', { session: false, failureMessage: true }), (req, res) => {
+
+    res.json({ msg: 'Success' });
 })
 
 module.exports = router;
